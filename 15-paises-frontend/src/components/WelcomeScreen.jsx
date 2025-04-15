@@ -11,13 +11,15 @@ const WELCOME_MESSAGES = [
   "Iniciando embarque del vuelo {flight} hacia {country}"
 ];
 
+const API_URL_WS = import.meta.env.VITE_URL_BACKEND_WS;
+
 function WelcomeScreen() {
   const [currentGuest, setCurrentGuest] = useState(null);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [socketConnected, setSocketConnected] = useState(false);
+  const [setSocketConnected] = useState(false);
   
   useEffect(() => {
-    const socket = io('http://localhost:5000', {
+    const socket = io(API_URL_WS, {
       transports: ['polling', 'websocket'],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,

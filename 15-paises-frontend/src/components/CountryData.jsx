@@ -39,7 +39,6 @@ const CountryData = {
       flag: "🇨🇦",
       bgImage: "/images/canada.jpg"
     },
-    // Se pueden agregar más países según las necesidades del evento
   };
   
   export default CountryData;

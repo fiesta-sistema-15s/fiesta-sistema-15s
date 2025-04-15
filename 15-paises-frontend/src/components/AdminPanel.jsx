@@ -4,21 +4,22 @@ import io from 'socket.io-client';
 import CountryData from './CountryData';
 import '../styles/AdminPanel.css';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_URL_BACKEND;
+const API_URL_WS = import.meta.env.VITE_URL_BACKEND_WS;
 
 function AdminPanel() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({ total: 0, attended: 0 });
-  const [socketConnected, setSocketConnected] = useState(false);
+  const [ setSocketConnected ] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const PAGE_SIZE = 10; // Número de registros por página
 
   useEffect(() => {
     // Configurar socket con preferencia por polling para evitar errores de WebSocket
-    const socket = io('http://localhost:5000', {
+    const socket = io(API_URL_WS, {
       transports: ['polling', 'websocket'], // Polling primero, WebSocket después
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
@@ -131,7 +132,7 @@ function AdminPanel() {
   };
 
   const renderPagination = () => {
-    if (searchTerm !== '' && searchTerm.length >= 2) return null; // No mostrar paginación en búsquedas por nombre
+    if (searchTerm !== '' && searchTerm.length >= 2) return null;
     
     return (
       <div className="pagination">
