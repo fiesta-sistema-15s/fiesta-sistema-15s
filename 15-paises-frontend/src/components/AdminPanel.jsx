@@ -1,259 +1,141 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
-import CountryData from './CountryData';
+import Stats from '../components/Stats';
+import SearchBar from '../components/SearchBar';
+import GuestTable from '../components/GuestTable';
+import Pagination from '../components/Pagination';
 import '../styles/AdminPanel.css';
 
 const API_URL = import.meta.env.VITE_URL_BACKEND;
 const API_URL_WS = import.meta.env.VITE_URL_BACKEND_WS;
+const PAGE_SIZE = 10;
 
 function AdminPanel() {
+  const [allGuests, setAllGuests] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState({ total: 0, attended: 0 });
-  const [ setSocketConnected ] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const PAGE_SIZE = 10; // Número de registros por página
+  const [stats, setStats] = useState({ total: 0, attended: 0, pending: 0 });
 
   useEffect(() => {
-    // Configurar socket con preferencia por polling para evitar errores de WebSocket
+    let isMounted = true;
+
+    const fetchAllGuests = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${API_URL}/guests`);
+        if (isMounted) {
+          setAllGuests(response.data || []);
+        }
+      } catch (error) {
+        console.error("Error al obtener invitados:", error);
+        if (isMounted) setAllGuests([]);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchAllGuests();
+
     const socket = io(API_URL_WS, {
-      transports: ['polling', 'websocket'], // Polling primero, WebSocket después
+      transports: ['polling', 'websocket'],
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
       timeout: 10000
     });
-    
-    socket.on('connect', () => {
-      console.log('AdminPanel: Conectado al servidor Socket.io');
-      setSocketConnected(true);
-    });
-    
-    socket.on('connect_error', (error) => {
-      console.error('AdminPanel: Error de conexión:', error.message);
-      setSocketConnected(false);
-    });
-    
-    // Escuchar eventos de actualización para refrescar datos
+
+    socket.on('connect', () => console.log('Socket conectado'));
+    socket.on('connect_error', error => console.error('Error de socket:', error.message));
     socket.on('guestUpdated', () => {
-      fetchStats();
-      // Si hay búsqueda activa o se están mostrando todos los invitados, actualizar resultados
-      if (searchTerm === '' || searchTerm.length >= 2) {
-        handleSearch(currentPage);
-      }
+      setAllGuests(current => {
+        const attended = current.filter(g => g.attended).length;
+        setStats({
+          total: current.length,
+          attended,
+          pending: current.length - attended,
+        });
+        return current;
+      });
     });
 
-    fetchStats();
-    
-    // Cleanup socket connection on unmount
     return () => {
-      console.log('Desconectando socket...');
+      isMounted = false;
       socket.disconnect();
     };
   }, []);
 
-  const fetchStats = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/guests`);
-      const guests = response.data;
-      setStats({
-        total: guests.length,
-        attended: guests.filter(guest => guest.attended).length
-      });
-      
-      // Calcular total de páginas
-      setTotalPages(Math.ceil(guests.length / PAGE_SIZE));
-    } catch (error) {
-      console.error("Error fetching stats:", error);
-    }
-  };
+  useEffect(() => {
+    const attended = allGuests.filter(g => g.attended).length;
+    setStats({
+      total: allGuests.length,
+      attended,
+      pending: allGuests.length - attended,
+    });
+  }, [allGuests]);
 
-  const handleSearch = async (page = 1) => {
-    setCurrentPage(page);
-    setLoading(true);
-    
-    try {
-      let response;
-      
-      if (searchTerm === '') {
-        // Si el input está vacío, traemos resultados paginados
-        response = await axios.get(`${API_URL}/guests/paginated?page=${page}&limit=${PAGE_SIZE}`);
-      } else if (searchTerm.length < 2) {
-        setSearchResults([]);
-        setLoading(false);
-        return;
-      } else {
-        // Búsqueda normal por nombre
-        response = await axios.get(`${API_URL}/guests/search?name=${encodeURIComponent(searchTerm)}`);
-      }
-      
-      setSearchResults(response.data.guests || response.data);
-      
-      // Actualizar total de páginas si se recibe esa información
-      if (response.data.totalPages) {
-        setTotalPages(response.data.totalPages);
-      }
-    } catch (error) {
-      console.error("Error searching guests:", error);
-      setSearchResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const filteredGuests = useMemo(() => {
+    return searchTerm
+      ? allGuests.filter(g => g.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      : allGuests;
+  }, [allGuests, searchTerm]);
+
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(filteredGuests.length / PAGE_SIZE)), [filteredGuests]);
+
+  const displayedGuests = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredGuests.slice(start, start + PAGE_SIZE);
+  }, [filteredGuests, currentPage]);
 
   const handleSearchInputChange = (e) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    
-    // Si el input queda vacío, cargar la primera página
-    if (value === '') {
-      handleSearch(1);
-    }
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
 
-  const handleCheckIn = async (guestId) => {
+  const handleCheckIn = useCallback(async (guestId) => {
+    const updated = allGuests.map(g => g._id === guestId ? { ...g, attended: true } : g);
+    setAllGuests(updated);
+
     try {
       await axios.patch(`${API_URL}/guests/${guestId}/checkin`);
-      
-      // Update local state
-      setSearchResults(prevResults => 
-        prevResults.map(guest => 
-          guest._id === guestId ? { ...guest, attended: true } : guest
-        )
-      );
-      
-      fetchStats();
-    } catch (error) {
-      console.error("Error checking in guest:", error);
-      alert("Hubo un error al registrar la llegada del invitado");
+    } catch (err) {
+      console.error("Error en check-in:", err);
+      alert("Error al registrar llegada. Revirtiendo.");
+      setAllGuests(prev => prev.map(g => g._id === guestId ? { ...g, attended: false } : g));
     }
-  };
-
-  const renderPagination = () => {
-    if (searchTerm !== '' && searchTerm.length >= 2) return null;
-    
-    return (
-      <div className="pagination">
-        <button 
-          onClick={() => handleSearch(1)} 
-          disabled={currentPage === 1 || loading}
-          className="pagination-btn"
-        >
-          &laquo; Primera
-        </button>
-        
-        <button 
-          onClick={() => handleSearch(currentPage - 1)}
-          disabled={currentPage === 1 || loading}
-          className="pagination-btn"
-        >
-          &lt; Anterior
-        </button>
-        
-        <span className="pagination-info">
-          Página {currentPage} de {totalPages}
-        </span>
-        
-        <button 
-          onClick={() => handleSearch(currentPage + 1)}
-          disabled={currentPage === totalPages || loading}
-          className="pagination-btn"
-        >
-          Siguiente &gt;
-        </button>
-        
-        <button 
-          onClick={() => handleSearch(totalPages)}
-          disabled={currentPage === totalPages || loading}
-          className="pagination-btn"
-        >
-          Última &raquo;
-        </button>
-      </div>
-    );
-  };
+  }, [allGuests]);
 
   return (
     <div className="admin-panel">
       <header>
         <h1>🌎 Sistema de Registro - Evento de Viajes 🌍</h1>
       </header>
-      
-      <div className="stats-container">
-        <div className="stat-box">
-          <h3>Total Invitados</h3>
-          <p>{stats.total}</p>
-        </div>
-        <div className="stat-box">
-          <h3>Asistentes</h3>
-          <p>{stats.attended}</p>
-        </div>
-        <div className="stat-box">
-          <h3>Pendientes</h3>
-          <p>{stats.total - stats.attended}</p>
-        </div>
-      </div>
-      
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Buscar invitado por nombre o dejar vacío para ver todos..."
-          value={searchTerm}
-          onChange={handleSearchInputChange}
-          onKeyPress={(e) => e.key === 'Enter' && handleSearch(1)}
-        />
-        <button onClick={() => handleSearch(1)} disabled={loading}>
-          {loading ? 'Buscando...' : 'Buscar'}
-        </button>
-      </div>
-      
+
+      <Stats {...stats} />
+
+      <SearchBar
+        searchTerm={searchTerm}
+        onChange={handleSearchInputChange}
+        onClear={() => setSearchTerm('')}
+      />
+
       <div className="results-container">
-        {searchResults.length > 0 ? (
+        {loading ? (
+          <p>Cargando invitados...</p>
+        ) : allGuests.length === 0 ? (
+          <p className="no-results">No hay invitados registrados.</p>
+        ) : displayedGuests.length > 0 ? (
           <>
-            <table>
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>País / Mesa</th>
-                  <th>Estado</th>
-                  <th>Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {searchResults.map(guest => (
-                  <tr key={guest._id} className={guest.attended ? 'attended' : ''}>
-                    <td>{guest.name}</td>
-                    <td>
-                      {CountryData[guest.country]?.flag || '🏳️'} {guest.country} (Mesa {guest.table})
-                    </td>
-                    <td>
-                      {guest.attended ? 
-                        <span className="status attended">Asistió</span> : 
-                        <span className="status pending">Pendiente</span>
-                      }
-                    </td>
-                    <td>
-                      {!guest.attended && (
-                        <button 
-                          className="check-in-btn"
-                          onClick={() => handleCheckIn(guest._id)}
-                        >
-                          Registrar Llegada
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            
-            {renderPagination()}
+            <GuestTable guests={displayedGuests} onCheckIn={handleCheckIn} />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              goToPage={setCurrentPage}
+            />
           </>
         ) : (
           <p className="no-results">
-            {searchTerm.length > 0 ? 'No se encontraron invitados con ese nombre' : 'Busca un invitado para comenzar'}
+            {searchTerm ? 'No se encontraron invitados con ese nombre.' : 'No hay invitados para mostrar.'}
           </p>
         )}
       </div>
@@ -262,3 +144,5 @@ function AdminPanel() {
 }
 
 export default AdminPanel;
+
+

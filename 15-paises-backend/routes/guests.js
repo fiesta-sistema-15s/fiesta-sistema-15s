@@ -45,12 +45,13 @@ router.patch('/:id/checkin', async (req, res) => {
     // Emitir evento vía Socket.io
     const io = req.app.get('io');
     io.emit('displayWelcome', {
+      id: guest._id,
       name: guest.name,
       country: guest.country,
       flightNumber: Math.floor(Math.random() * 900) + 100
     });
     
-    res.status(201).json("Asistencia registrada correctamente");
+    res.status(201).json(guest);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
