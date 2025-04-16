@@ -6,6 +6,7 @@ import SearchBar from '../components/SearchBar';
 import GuestTable from '../components/GuestTable';
 import Pagination from '../components/Pagination';
 import '../styles/AdminPanel.css';
+import Swal from 'sweetalert2';
 
 const API_URL = import.meta.env.VITE_URL_BACKEND;
 const API_URL_WS = import.meta.env.VITE_URL_BACKEND_WS;
@@ -92,18 +93,59 @@ function AdminPanel() {
     setCurrentPage(1);
   };
 
+  // const handleCheckIn = useCallback(async (guestId) => {
+  //   const updated = allGuests.map(g => g._id === guestId ? { ...g, attended: true } : g);
+  //   setAllGuests(updated);
+
+  //   try {
+  //     await axios.patch(`${API_URL}/guests/${guestId}/checkin`);
+  //   } catch (err) {
+  //     console.error("Error en check-in:", err);
+  //     alert("Error al registrar llegada. Revirtiendo.");
+  //     setAllGuests(prev => prev.map(g => g._id === guestId ? { ...g, attended: false } : g));
+  //   }
+  // }, [allGuests]);
+
   const handleCheckIn = useCallback(async (guestId) => {
+    const guest = allGuests.find(g => g._id === guestId);
+    if (!guest) return;
+  
+    const result = await Swal.fire({
+      title: `¿Confirmar llegada de ${guest.name}?`,
+      text: "Esta acción marcará al invitado como asistente.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, registrar llegada',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+    });
+  
+    if (!result.isConfirmed) return;
+  
     const updated = allGuests.map(g => g._id === guestId ? { ...g, attended: true } : g);
     setAllGuests(updated);
-
+  
     try {
       await axios.patch(`${API_URL}/guests/${guestId}/checkin`);
+      Swal.fire({
+        title: '¡Listo!',
+        text: 'La llegada fue registrada con éxito.',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } catch (err) {
       console.error("Error en check-in:", err);
-      alert("Error al registrar llegada. Revirtiendo.");
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo registrar la llegada. Intenta nuevamente.',
+        icon: 'error',
+      });
       setAllGuests(prev => prev.map(g => g._id === guestId ? { ...g, attended: false } : g));
     }
   }, [allGuests]);
+  
 
   return (
     <div className="admin-panel">
