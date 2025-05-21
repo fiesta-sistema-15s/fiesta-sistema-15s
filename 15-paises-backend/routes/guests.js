@@ -14,6 +14,7 @@ router.get('/', async (req, res) => {
 
 // Crear nuevo invitado
 router.post('/', async (req, res) => {
+  console.log(req.body);
   const guest = new Guest({
     name: req.body.name,
     country: req.body.country,
@@ -27,6 +28,17 @@ router.post('/', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+router.delete("/", async (req, res) => {
+  try {
+    const guest = await Guest.deleteMany();
+    if (!guest) {
+      return res.status(404).json({ message: 'No se encontraron invitados para eliminar' });
+    }
+  }catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+})
 
 // Registrar asistencia
 router.patch('/:id/checkin', async (req, res) => {

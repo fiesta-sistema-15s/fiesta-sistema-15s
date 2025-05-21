@@ -117,8 +117,8 @@ function AdminPanel() {
       showCancelButton: true,
       confirmButtonText: 'Sí, registrar llegada',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#704741',
+      cancelButtonColor: '#db9e95',
     });
   
     if (!result.isConfirmed) return;

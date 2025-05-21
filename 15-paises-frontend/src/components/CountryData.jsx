@@ -1,43 +1,131 @@
 const CountryData = {
-    "Francia": {
-      flag: "🇫🇷",
-      bgImage: "/images/france.jpg"
+    "TOKIO":{
+      flag: "JP",
+      bgImage: "/images/tokyo.jpg"
     },
-    "Italia": {
-      flag: "🇮🇹",
-      bgImage: "/images/italy.jpg"
+
+    "BERLIN":{
+      flag: "DE",
+      bgImage: "/images/berlin.jpg"
     },
-    "Japón": {
-      flag: "🇯🇵",
-      bgImage: "/images/japan.jpg"
+
+    "PRAGA":{
+      flag: "CZ",
+      bgImage: "/images/praga.jpg"
     },
-    "México": {
-      flag: "🇲🇽",
-      bgImage: "/images/mexico.jpg"
+
+    "CANCUN":{
+      flag: "MX",
+      bgImage: "/images/cancun.jpg"
     },
-    "Brasil": {
-      flag: "🇧🇷",
-      bgImage: "/images/brazil.jpg"
+
+    "LAS VEGAS":{
+      flag: "US",
+      bgImage: "/images/las-vegas.jpg"
     },
-    "Australia": {
-      flag: "🇦🇺",
-      bgImage: "/images/australia.jpg"
+
+    "EGIPTO":{
+      flag: "EG",
+      bgImage: "/images/egipto.jpg"
     },
-    "India": {
-      flag: "🇮🇳",
-      bgImage: "/images/india.jpg"
+
+    "CALIFORNIA":{
+      flag: "US",
+      bgImage: "/images/california.jpg"
     },
-    "Egipto": {
-      flag: "🇪🇬",
-      bgImage: "/images/egypt.jpg"
+
+    "HOLLYWOOD":{
+      flag: "US",
+      bgImage: "/images/holiwood.jpg"
     },
-    "Sudáfrica": {
-      flag: "🇿🇦",
-      bgImage: "/images/south-africa.jpg"
+    
+    "NAPOLES":{
+      flag: "IT",
+      bgImage: "/images/napoles.jpg"
     },
-    "Canadá": {
-      flag: "🇨🇦",
-      bgImage: "/images/canada.jpg"
+
+    "BARCELONA":{
+      flag: "ES",
+      bgImage: "/images/barcelona.jpg"
+    },
+
+    "ROMA":{
+      flag: "IT",
+      bgImage: "/images/roma.jpg"
+    },
+
+    "LONDRES":{
+      flag: "GB",
+      bgImage: "/images/londres.jpg"
+    },
+
+    "MILAN":{
+      flag: "IT",
+      bgImage: "/images/milan.jpg"
+    },
+
+    "IBIZA":{
+      flag: "ES",
+      bgImage: "/images/ibiza.jpg"
+    },
+
+    "PARIS":{
+      flag: "FR",
+      bgImage: "/images/paris.jpg"
+    },
+
+    "MADRID":{
+      flag: "ES",
+      bgImage: "/images/madrid.jpg"
+    },
+
+    "MIAMI":{
+      flag: "US",
+      bgImage: "/images/miami.jpg"
+    },
+
+    "NUEVA YORK":{
+      flag: "US",
+      bgImage: "/images/nueva-york.jpg"
+    },
+
+    "BOGOTA":{
+      flag: "CO",
+      bgImage: "/images/bogota.jpg"
+    },
+
+    "CHICAGO":{
+      flag: "US",
+      bgImage: "/images/chicago.jpg"
+    },
+
+    "DUBAI":{
+      flag: "AE",
+      bgImage: "/images/dubai.jpg"
+    },
+
+    "RIO DE JANEIRO":{
+      flag: "BR",
+      bgImage: "/images/rio-de-janeiro.jpg"
+    },
+
+    "LOS ANGELES":{
+      flag: "US",
+      bgImage: "/images/los-angeles.jpg"
+    },
+
+    "ORLANDO":{
+      flag: "US",
+      bgImage: "/images/orlando.jpg"
+    },
+
+    "LISBOA":{
+      flag: "PT",
+      bgImage: "/images/lisboa.jpg"
+    },
+    "VENECIA":{
+      flag: "IT",
+      bgImage: "/images/venecia.jpg"
     },
   };
   

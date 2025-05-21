@@ -1,6 +1,7 @@
 import React from 'react';
 import CountryData from './CountryData';
 import '../styles/AdminPanel.css';
+import { CountryFlagEmoji } from './CountryFlagEmoji';
 
 function GuestTable({ guests, onCheckIn }) {
   return (
@@ -18,7 +19,10 @@ function GuestTable({ guests, onCheckIn }) {
           <tr key={guest._id} className={guest.attended ? 'attended' : ''}>
             <td>{guest.name}</td>
             <td>
-              {CountryData[guest.country]?.flag || '🏳️'} {guest.country} (Mesa {guest.table})
+              <div className='country-table'>
+                <CountryFlagEmoji code={guest.country}/>
+                <span>{guest.country}</span>
+              </div>
             </td>
             <td>
               {guest.attended ? (
