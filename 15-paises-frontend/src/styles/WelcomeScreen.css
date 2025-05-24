@@ -2819,6 +2819,8 @@
 }
 
 @media (min-width: 1920px) {
+
+
   .welcome-content {
     max-width: 1200px;
     padding: 70px;
@@ -2851,6 +2853,23 @@
 
   .airplane-icon {
     font-size: 80px;
+  }
+
+  .idle-message {
+    max-width: 1400px;
+    padding: 100px;
+  }
+
+  .idle-message h1 {
+    font-size: 90px;
+  }
+
+  .idle-message p {
+    font-size: 40px;
+  }
+
+  .airplane-animation {
+    font-size: 120px;
   }
 }
 
@@ -2888,9 +2907,44 @@
   .airplane-icon {
     font-size: 110px;
   }
+
+   .idle-message {
+    max-width: 1600px;
+    padding: 120px;
+  }
+
+  .idle-message h1 {
+    font-size: 110px;
+  }
+
+  .idle-message p {
+    font-size: 48px;
+  }
+
+  .airplane-animation {
+    font-size: 140px;
+  }
 }
 
 @media (min-width: 3080px) {
+
+  .idle-message {
+    max-width: 2800px;
+    padding: 160px;
+  }
+
+  .idle-message h1 {
+    font-size: 220px;
+  }
+
+  .idle-message p {
+    font-size: 120px;
+  }
+
+  .airplane-animation {
+    font-size: 160px;
+  }
+
   .welcome-content {
     height: 50%;
     max-width: 2400px;
