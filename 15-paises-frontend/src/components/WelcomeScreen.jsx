@@ -6,7 +6,7 @@ import Flag from 'react-world-flags';
 import { CountryFlagEmoji } from './CountryFlagEmoji';
 ;
 
-const BOARDING_SOUND = '/sounds/boarding.mp3';
+// const BOARDING_SOUND = '/sounds/boarding.mp3';
 // const WELCOME_MESSAGES = [
 //   "Bienvenido al vuelo 20vr25-2405 con destino a {country}",
 //   "Pasajero con destino a {country}, bienvenido a bordo del vuelo 20vr25-2405",
@@ -66,8 +66,8 @@ function WelcomeScreen() {
     setCurrentGuest(nextGuest);
     setShowAnimation(true);
 
-    const audio = new Audio(BOARDING_SOUND);
-    audio.play().catch(err => console.error('Error reproduciendo audio:', err));
+    // const audio = new Audio(BOARDING_SOUND);
+    // audio.play().catch(err => console.error('Error reproduciendo audio:', err));
 
     setTimeout(() => {
       setShowAnimation(false);

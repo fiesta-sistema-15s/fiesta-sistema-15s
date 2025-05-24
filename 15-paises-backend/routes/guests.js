@@ -116,4 +116,8 @@ router.get('/paginated', async (req, res) => {
   }
 });
 
+router.get('/ping', (req, res) => {
+  res.json({ message: 'Pong!' });
+})
+
 module.exports = router;

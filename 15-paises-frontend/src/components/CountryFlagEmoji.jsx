@@ -6,7 +6,6 @@ import Flag from "react-world-flags"
 export const CountryFlagEmoji = ({ code, width }) => {
 
 const getCountryFlagEmoji = (countryCode) => {
-    console.log("countryCode", CountryData[countryCode]?.flag)
    return CountryData[countryCode]?.flag || "🏳️"
 }
   const title = code ? CountryData[code] || code : undefined

@@ -77,7 +77,7 @@ function AdminPanel() {
 
   const filteredGuests = useMemo(() => {
     return searchTerm
-      ? allGuests.filter(g => g.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      ? allGuests.filter(g => g.name.toLowerCase().includes(searchTerm.toLowerCase()) || g.country.toLowerCase().includes(searchTerm.toLowerCase()))
       : allGuests;
   }, [allGuests, searchTerm]);
 
