@@ -2545,6 +2545,8 @@
   opacity: 0.7;
 }
 
+
+
 /* Add responsive styles */
 @media (max-width: 768px) {
   .welcome-content {
@@ -2813,6 +2815,126 @@
   .welcome-screen.active::before,
   .welcome-screen.active::after {
     opacity: 0.2;
+  }
+}
+
+@media (min-width: 1920px) {
+  .welcome-content {
+    max-width: 1200px;
+    padding: 70px;
+  }
+
+  .guest-welcome h1 {
+    font-size: 80px;
+  }
+
+  .country-flag {
+    font-size: 80px;
+  }
+
+  .country-name {
+    font-size: 48px;
+  }
+
+  .welcome-message {
+    font-size: 48px;
+  }
+
+  .flight-number {
+    font-size: 36px;
+  }
+
+  .boarding-pass {
+    font-size: 20px;
+    padding: 12px 30px;
+  }
+
+  .airplane-icon {
+    font-size: 80px;
+  }
+}
+
+@media (min-width: 2560px) and (max-width: 3079px) {
+  .welcome-content {
+    max-width: 1800px;
+    padding: 110px;
+  }
+
+  .guest-welcome h1 {
+    font-size: 110px;
+  }
+
+  .country-flag {
+    font-size: 100px;
+  }
+
+  .country-name {
+    font-size: 56px;
+  }
+
+  .welcome-message {
+    font-size: 52px;
+  }
+
+  .flight-number {
+    font-size: 48px;
+  }
+
+  .boarding-pass {
+    font-size: 26px;
+    padding: 18px 42px;
+  }
+
+  .airplane-icon {
+    font-size: 110px;
+  }
+}
+
+@media (min-width: 3080px) {
+  .welcome-content {
+    height: 50%;
+    max-width: 2400px;
+    padding: 120px;
+  }
+
+  .guest-welcome h1 {
+    font-size: 120px;
+  }
+
+  .country-flag {
+    font-size: 120px;
+  }
+
+  .country-name {
+    font-size: 64px;
+  }
+
+  .welcome-message {
+    font-size: 90px;
+    max-width: 90%;
+  }
+
+  .flight-number {
+    font-size: 52px;
+  }
+
+  .boarding-pass {
+    font-size: 28px;
+    padding: 20px 50px;
+  }
+
+  .airplane-icon {
+    font-size: 120px;
+  }
+
+  .world-map {
+    background-size: cover;
+    opacity: 0.2;
+  }
+
+  .welcome-screen.active::before,
+  .welcome-screen.active::after {
+    font-size: 120px;
   }
 }
 
